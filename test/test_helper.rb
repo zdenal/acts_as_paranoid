@@ -7,7 +7,11 @@ $:.unshift "#{File.dirname(__FILE__)}/../lib/"
 require 'init'
 require 'minitest/autorun'
 
+# Silence deprecation warning
+I18n.enforce_available_locales = true
+
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+ActiveRecord::Schema.verbose = false
 
 def setup_db
   ActiveRecord::Schema.define(:version => 1) do
@@ -404,11 +408,7 @@ end
 class ParanoidForest < ActiveRecord::Base
   acts_as_paranoid
 
-  # HACK: scope throws an error on 1.8.7 because the logger isn't initialized (see https://github.com/Casecommons/pg_search/issues/26)
-  require "active_support/core_ext/logger.rb"
-  ActiveRecord::Base.logger = Logger.new(StringIO.new)
-
-  scope :rainforest, where(:rainforest => true)
+  scope :rainforest, -> { where(:rainforest => true) }
 
   has_many :paranoid_trees, :dependent => :destroy
 end
@@ -421,7 +421,7 @@ end
 
 class ParanoidHuman < ActiveRecord::Base
   acts_as_paranoid
-  default_scope where('gender = ?', 'male')
+  default_scope -> { where('gender = ?', 'male') }
 end
 
 class ParanoidAndroid < ActiveRecord::Base
