@@ -1,14 +1,11 @@
-require 'rubygems'
-require 'test/unit'
-require 'active_support'
-require 'active_record'
-require 'active_model'
+require 'bundler'
+Bundler.require(:default, :development)
 
 $:.unshift "#{File.dirname(__FILE__)}/../"
 $:.unshift "#{File.dirname(__FILE__)}/../lib/"
-$:.unshift "#{File.dirname(__FILE__)}/../lib/validations"
 
 require 'init'
+require 'minitest/autorun'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
